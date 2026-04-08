@@ -25,11 +25,15 @@ El parámetro `branch` es **opcional**. Simplemente puedes pedirlo en el chat:
 
 El agente enviará automáticamente el parámetro `branch` a SonarQube.
 
-## Build local con Docker
+## Imagen Docker Hub
 
 ```bash
-docker build -f Dockerfile.local -t sonarqube-mcp-server:local .
+docker pull oscarsinuco/sonarqube-mcp-server:latest
 ```
+
+Tags disponibles:
+- `oscarsinuco/sonarqube-mcp-server:latest`
+- `oscarsinuco/sonarqube-mcp-server:branch-support`
 
 ## Configuración MCP
 
@@ -46,7 +50,7 @@ docker build -f Dockerfile.local -t sonarqube-mcp-server:local .
         "SONARQUBE_TOKEN",
         "-e",
         "SONARQUBE_URL",
-        "sonarqube-mcp-server:local"
+        "oscarsinuco/sonarqube-mcp-server:latest"
       ],
       "env": {
         "SONARQUBE_TOKEN": "tu-token",
@@ -55,6 +59,14 @@ docker build -f Dockerfile.local -t sonarqube-mcp-server:local .
     }
   }
 }
+```
+
+## Build local (opcional)
+
+Si prefieres compilar desde el código fuente:
+
+```bash
+docker build -f Dockerfile.local -t sonarqube-mcp-server:local .
 ```
 
 ## Créditos
