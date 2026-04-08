@@ -30,6 +30,7 @@ public class SearchIssuesTool extends Tool {
 
   public static final String PROJECTS_PROPERTY = "projects";
   public static final String FILES_PROPERTY = "files";
+  public static final String BRANCH_PROPERTY = "branch";
   public static final String PULL_REQUEST_ID_PROPERTY = "pullRequestId";
   public static final String SEVERITIES_PROPERTY = "severities";
   public static final String IMPACT_SOFTWARE_QUALITIES_PROPERTY = "impactSoftwareQualities";
@@ -61,7 +62,8 @@ public class SearchIssuesTool extends Tool {
       .setDescription(description)
       .addArrayProperty(PROJECTS_PROPERTY, "string", "An optional list of Sonar projects to look in")
       .addArrayProperty(FILES_PROPERTY, "string", "An optional list of component keys (files, directories, modules) to filter issues")
-      .addStringProperty(PULL_REQUEST_ID_PROPERTY, "The identifier of the Pull Request to look in")
+      .addStringProperty(BRANCH_PROPERTY, "The branch name to look in. If not specified, uses the main branch. Cannot be used together with pullRequestId.")
+      .addStringProperty(PULL_REQUEST_ID_PROPERTY, "The identifier of the Pull Request to look in. Cannot be used together with branch.")
       .addEnumProperty(SEVERITIES_PROPERTY, VALID_SEVERITIES, "An optional list of severities to filter by")
       .addEnumProperty(IMPACT_SOFTWARE_QUALITIES_PROPERTY, VALID_IMPACT_SOFTWARE_QUALITIES, "An optional list of software qualities to filter by")
       .addEnumProperty(ISSUE_STATUSES_PROPERTY, VALID_ISSUE_STATUSES, "An optional list of issue statuses to filter by. Note: IN_SANDBOX is valid only for SonarQube Server")
@@ -83,7 +85,7 @@ public class SearchIssuesTool extends Tool {
   private static IssuesApi.SearchParams extractSearchParams(Tool.Arguments arguments) {
     return new IssuesApi.SearchParams(
       arguments.getOptionalStringList(PROJECTS_PROPERTY),
-      null,
+      arguments.getOptionalString(BRANCH_PROPERTY),
       arguments.getOptionalStringList(FILES_PROPERTY),
       arguments.getOptionalString(PULL_REQUEST_ID_PROPERTY),
       arguments.getOptionalEnumList(SEVERITIES_PROPERTY, VALID_SEVERITIES),

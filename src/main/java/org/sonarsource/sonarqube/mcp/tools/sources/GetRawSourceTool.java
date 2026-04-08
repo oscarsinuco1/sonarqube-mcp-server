@@ -25,6 +25,7 @@ public class GetRawSourceTool extends Tool {
 
   public static final String TOOL_NAME = "get_raw_source";
   public static final String KEY_PROPERTY = "key";
+  public static final String BRANCH_PROPERTY = "branch";
   public static final String PULL_REQUEST_PROPERTY = "pullRequest";
 
   private final ServerApiProvider serverApiProvider;
@@ -35,7 +36,8 @@ public class GetRawSourceTool extends Tool {
       .setTitle("Get SonarQube Raw Source Code")
       .setDescription("Get source code as raw text. Requires 'See Source Code' permission on file.")
       .addRequiredStringProperty(KEY_PROPERTY, "File key (e.g. my_project:src/foo/Bar.php)")
-      .addStringProperty(PULL_REQUEST_PROPERTY, "Pull request id")
+      .addStringProperty(BRANCH_PROPERTY, "Branch name. If not specified, uses the main branch. Cannot be used together with pullRequest.")
+      .addStringProperty(PULL_REQUEST_PROPERTY, "Pull request id. Cannot be used together with branch.")
       .setReadOnlyHint()
       .build(),
       ToolCategory.SOURCES);
@@ -45,10 +47,11 @@ public class GetRawSourceTool extends Tool {
   @Override
   public Tool.Result execute(Tool.Arguments arguments) {
     var key = arguments.getStringOrThrow(KEY_PROPERTY);
+    var branch = arguments.getOptionalString(BRANCH_PROPERTY);
     var pullRequest = arguments.getOptionalString(PULL_REQUEST_PROPERTY);
     
     try {
-      var rawSource = serverApiProvider.get().sourcesApi().getRawSource(key, null, pullRequest);
+      var rawSource = serverApiProvider.get().sourcesApi().getRawSource(key, branch, pullRequest);
       var response = new GetRawSourceToolResponse(key, rawSource);
       return Tool.Result.success(response);
     } catch (Exception e) {

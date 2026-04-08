@@ -26,6 +26,7 @@ public class GetDuplicationsTool extends Tool {
 
   public static final String TOOL_NAME = "get_duplications";
   public static final String KEY_PROPERTY = "key";
+  public static final String BRANCH_PROPERTY = "branch";
   public static final String PULL_REQUEST_PROPERTY = "pullRequest";
 
   private final ServerApiProvider serverApiProvider;
@@ -36,7 +37,8 @@ public class GetDuplicationsTool extends Tool {
       .setTitle("Get SonarQube Code Duplications")
       .setDescription("Get duplications for a file. Requires Browse permission on file's project")
       .addRequiredStringProperty(KEY_PROPERTY, "File key (e.g. my_project:src/foo/Bar.php)")
-      .addStringProperty(PULL_REQUEST_PROPERTY, "Pull request id")
+      .addStringProperty(BRANCH_PROPERTY, "Branch name. If not specified, uses the main branch. Cannot be used together with pullRequest.")
+      .addStringProperty(PULL_REQUEST_PROPERTY, "Pull request id. Cannot be used together with branch.")
       .setReadOnlyHint()
       .build(),
       ToolCategory.DUPLICATIONS);
@@ -46,9 +48,10 @@ public class GetDuplicationsTool extends Tool {
   @Override
   public Tool.Result execute(Tool.Arguments arguments) {
     var key = arguments.getStringOrThrow(KEY_PROPERTY);
+    var branch = arguments.getOptionalString(BRANCH_PROPERTY);
     var pullRequest = arguments.getOptionalString(PULL_REQUEST_PROPERTY);
     
-    var duplicationsResponse = serverApiProvider.get().duplicationsApi().getDuplications(key, null, pullRequest);
+    var duplicationsResponse = serverApiProvider.get().duplicationsApi().getDuplications(key, branch, pullRequest);
     var response = buildStructuredContent(duplicationsResponse);
     return Tool.Result.success(response);
   }

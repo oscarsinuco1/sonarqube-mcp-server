@@ -30,6 +30,7 @@ public class SearchSecurityHotspotsTool extends Tool {
 
   public static final String PROJECT_KEY_PROPERTY = "projectKey";
   public static final String HOTSPOT_KEYS_PROPERTY = "hotspotKeys";
+  public static final String BRANCH_PROPERTY = "branch";
   public static final String PULL_REQUEST_PROPERTY = "pullRequest";
   public static final String FILES_PROPERTY = "files";
   public static final String STATUS_PROPERTY = "status";
@@ -51,7 +52,8 @@ public class SearchSecurityHotspotsTool extends Tool {
       .setDescription("Search for Security Hotspots in a project.")
       .addStringProperty(PROJECT_KEY_PROPERTY, "The key of the project or application to search in. Required unless hotspotKeys is provided.")
       .addArrayProperty(HOTSPOT_KEYS_PROPERTY, "string", "Comma-separated list of specific Security Hotspot keys to retrieve. Required unless projectKey is provided.")
-      .addStringProperty(PULL_REQUEST_PROPERTY, "The identifier of the Pull Request to search in")
+      .addStringProperty(BRANCH_PROPERTY, "The branch name to search in. If not specified, uses the main branch. Cannot be used together with pullRequest.")
+      .addStringProperty(PULL_REQUEST_PROPERTY, "The identifier of the Pull Request to search in. Cannot be used together with branch.")
       .addArrayProperty(FILES_PROPERTY, "string", "An optional list of file paths to filter Security Hotspots")
       .addEnumProperty(STATUS_PROPERTY, VALID_STATUSES, "Filter by review status")
       .addEnumProperty(RESOLUTION_PROPERTY, VALID_RESOLUTIONS, "Filter by resolution (when status is REVIEWED)")
@@ -96,7 +98,7 @@ public class SearchSecurityHotspotsTool extends Tool {
   private static HotspotsApi.SearchParams extractSearchParams(Tool.Arguments arguments) {
     return new HotspotsApi.SearchParams(
       arguments.getOptionalString(PROJECT_KEY_PROPERTY),
-      null,
+      arguments.getOptionalString(BRANCH_PROPERTY),
       arguments.getOptionalString(PULL_REQUEST_PROPERTY),
       arguments.getOptionalStringList(FILES_PROPERTY),
       arguments.getOptionalStringList(HOTSPOT_KEYS_PROPERTY),

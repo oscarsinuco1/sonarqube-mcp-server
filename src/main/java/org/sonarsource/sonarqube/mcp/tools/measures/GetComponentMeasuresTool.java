@@ -28,6 +28,7 @@ public class GetComponentMeasuresTool extends Tool {
   public static final String TOOL_NAME = "get_component_measures";
   public static final String PROJECT_KEY_PROPERTY = "projectKey";
   public static final String METRIC_KEYS_PROPERTY = "metricKeys";
+  public static final String BRANCH_PROPERTY = "branch";
   public static final String PULL_REQUEST_PROPERTY = "pullRequest";
 
   private final ServerApiProvider serverApiProvider;
@@ -39,7 +40,8 @@ public class GetComponentMeasuresTool extends Tool {
       .setDescription("Get SonarQube measures for a project, such as ncloc, complexity, violations, coverage, etc.")
       .addStringProperty(PROJECT_KEY_PROPERTY, "The project key")
       .addArrayProperty(METRIC_KEYS_PROPERTY, "string", "The metric keys to retrieve (e.g. ncloc, complexity, violations, coverage)")
-      .addStringProperty(PULL_REQUEST_PROPERTY, "The pull request identifier to analyze for measures")
+      .addStringProperty(BRANCH_PROPERTY, "The branch name to analyze. If not specified, uses the main branch. Cannot be used together with pullRequest.")
+      .addStringProperty(PULL_REQUEST_PROPERTY, "The pull request identifier to analyze for measures. Cannot be used together with branch.")
       .setReadOnlyHint()
       .build(),
       ToolCategory.MEASURES);
@@ -50,9 +52,10 @@ public class GetComponentMeasuresTool extends Tool {
   public Tool.Result execute(Tool.Arguments arguments) {
     var component = arguments.getOptionalString(PROJECT_KEY_PROPERTY);
     var metricKeys = arguments.getOptionalStringList(METRIC_KEYS_PROPERTY);
+    var branch = arguments.getOptionalString(BRANCH_PROPERTY);
     var pullRequest = arguments.getOptionalString(PULL_REQUEST_PROPERTY);
     
-    var response = serverApiProvider.get().measuresApi().getComponentMeasures(component, null, metricKeys, pullRequest);
+    var response = serverApiProvider.get().measuresApi().getComponentMeasures(component, branch, metricKeys, pullRequest);
     var toolResponse = buildStructuredContent(response);
     return Tool.Result.success(toolResponse);
   }
